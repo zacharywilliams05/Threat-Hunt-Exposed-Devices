@@ -77,7 +77,7 @@ Anything we could have done to prevent the thing we hunted for? Any way we could
 ## Queries and Results
 ### # of Internet Facing Devices
 ![Devicecount](https://github.com/user-attachments/assets/93cf47dc-0104-4670-9ebc-75c445f87f38)
-### # of Internet Facing Devices
+
 ```kql
 DeviceInfo
 | where IsInternetFacing == 1
