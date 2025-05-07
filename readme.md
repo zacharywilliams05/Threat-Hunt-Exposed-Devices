@@ -103,6 +103,7 @@ DeviceLogonEvents
 This query looks for failed logons specifically from remote or suspicious logon types. It filters only for failed logons and then counts the attempts for evidence of possible brute forcing attempts.
 
 Distinct Device Count for Failed Logons
+
 ![Numberofdevices](https://github.com/user-attachments/assets/a28c7720-1c56-4965-b112-6aa739fa5bd8)
 
 ```kql
