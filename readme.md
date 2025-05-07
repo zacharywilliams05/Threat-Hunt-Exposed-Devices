@@ -77,29 +77,33 @@ Anything we could have done to prevent the thing we hunted for? Any way we could
 ## Queries and Results
 ### # of Internet Facing Devices
 ![Devicecount](https://github.com/user-attachments/assets/93cf47dc-0104-4670-9ebc-75c445f87f38)
-
-
+### # of Internet Facing Devices
+```kql
 DeviceInfo
 | where IsInternetFacing == 1
 | project DeviceName
 | sort by DeviceName asc
 | summarize UniqueDeviceCount = dcount(DeviceName)
+```
+
 This query filters down the hosts that are internet facing and then counts the unique device name field to present the total number of hosts that have been internet facing for the last 30 days. This may give us a list of endpoints on which we want to focus. Are any of these endpoints business critical?
 
 Checking for Failed Logons
 ![Devicecount](https://github.com/user-attachments/assets/1e191c92-39a5-4c87-93f9-6c13a27a9312)
 
-
+```kql
 DeviceLogonEvents
 | where LogonType has_any ("Network", "Interactive", "RemoteInteractive","NetworkClearText")
 | where ActionType == "LogonFailed"
 | where isnotempty(RemoteIP)
 | summarize Attempts = count() by ActionType, RemoteIP, DeviceName
 | order by Attempts
+```
 This query looks for failed logons specifically from remote or suspicious logon types. It filters only for failed logons and then counts the attempts for evidence of possible brute forcing attempts.
 
 Distinct Device Count for Failed Logons
 
+```kql
 DeviceLogonEvents
 | where LogonType has_any ("Network", "Interactive", "RemoteInteractive","NetworkClearText")
 | where ActionType == "LogonFailed"
@@ -107,15 +111,19 @@ DeviceLogonEvents
 | summarize Attempts = count() by ActionType, RemoteIP, DeviceName
 | distinct DeviceName
 | count
+```
 This query builds off the previous to show the possible number of devices that may have been brute forced. Again, this will help give us some scope to know the impact of the issue.
 
 Discovery of Brute Force Success
 ![Successful Logons](https://github.com/user-attachments/assets/caaadc56-54c5-481e-9f48-ebca347f9ba1)
+
+```kql
 let RemoteIPsinQuestion = dynamic(["218.92.0.187","218.92.0.186","218.92.0.153","43.251.215.9","196.251.84.225","80.94.95.90","115.245.191.82","185.243.96.107","45.88.186.251"]);
 DeviceLogonEvents
 | where LogonType has_any("Network", "Interactive", "RemoteInteractive", "NetworkClearText")
 | where ActionType == "LogonSuccess"
 | where RemoteIP has_any(RemoteIPsinQuestion)
+```
 Based on the results of the Failed Logons query, we can look at the remote IP addresses with the most failed logons. We want to see if these remote IPs were able to successfully log on at some point.
 
 The results show 12 events where remote IP addresses with a high number of failed logons were able to successfully log in. Unsurprisingly, they were able to log on “root” and “guest” accounts. Most likely they had weak passwords. Judging by the timing of the events, there were probably only 4 total successful logons in the last 30 days.
