@@ -88,8 +88,9 @@ DeviceInfo
 
 This query filters down the hosts that are internet facing and then counts the unique device name field to present the total number of hosts that have been internet facing for the last 30 days. This may give us a list of endpoints on which we want to focus. Are any of these endpoints business critical?
 
-Checking for Failed Logons
-![Devicecount](https://github.com/user-attachments/assets/1e191c92-39a5-4c87-93f9-6c13a27a9312)
+### Checking for Failed Logons
+
+![Failedlogoncount](https://github.com/user-attachments/assets/60f06bf7-1354-4a96-81de-8ba987696014)
 
 ```kql
 DeviceLogonEvents
