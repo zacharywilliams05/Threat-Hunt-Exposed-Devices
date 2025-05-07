@@ -82,4 +82,47 @@ DeviceInfo
 | project DeviceName
 | sort by DeviceName asc
 | summarize UniqueDeviceCount = dcount(DeviceName)
+This query filters down the hosts that are internet facing and then counts the unique device name field to present the total number of hosts that have been internet facing for the last 30 days. This may give us a list of endpoints on which we want to focus. Are any of these endpoints business critical?
+
+Checking for Failed Logons
+kql
+
+コードをコピー
+DeviceLogonEvents
+| where LogonType has_any ("Network", "Interactive", "RemoteInteractive","NetworkClearText")
+| where ActionType == "LogonFailed"
+| where isnotempty(RemoteIP)
+| summarize Attempts = count() by ActionType, RemoteIP, DeviceName
+| order by Attempts
+This query looks for failed logons specifically from remote or suspicious logon types. It filters only for failed logons and then counts the attempts for evidence of possible brute forcing attempts.
+
+Distinct Device Count for Failed Logons
+kql
+
+コードをコピー
+DeviceLogonEvents
+| where LogonType has_any ("Network", "Interactive", "RemoteInteractive","NetworkClearText")
+| where ActionType == "LogonFailed"
+| where isnotempty(RemoteIP)
+| summarize Attempts = count() by ActionType, RemoteIP, DeviceName
+| distinct DeviceName
+| count
+This query builds off the previous to show the possible number of devices that may have been brute forced. Again, this will help give us some scope to know the impact of the issue.
+
+Discovery of Brute Force Success
+kql
+
+
+let RemoteIPsinQuestion = dynamic(["218.92.0.187","218.92.0.186","218.92.0.153","43.251.215.9","196.251.84.225","80.94.95.90","115.245.191.82","185.243.96.107","45.88.186.251"]);
+DeviceLogonEvents
+| where LogonType has_any("Network", "Interactive", "RemoteInteractive", "NetworkClearText")
+| where ActionType == "LogonSuccess"
+| where RemoteIP has_any(RemoteIPsinQuestion)
+Based on the results of the Failed Logons query, we can look at the remote IP addresses with the most failed logons. We want to see if these remote IPs were able to successfully log on at some point.
+
+The results show 12 events where remote IP addresses with a high number of failed logons were able to successfully log in. Unsurprisingly, they were able to log on “root” and “guest” accounts. Most likely they had weak passwords. Judging by the timing of the events, there were probably only 4 total successful logons in the last 30 days.
+
+Next, we investigate these machines and check for any malware, privilege escalation, and other IOCs.
+
+Outside of a lab environment, and assuming adequate resources, we would want to investigate all of the remote IP addresses that attempted brute force attacks.
 
