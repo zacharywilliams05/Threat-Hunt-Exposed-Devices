@@ -50,7 +50,7 @@ Document what you did.
 **Activity:** Adjust strategies and tools based on what worked or didn’t.  
 Anything we could have done to prevent the thing we hunted for? Any way we could have improved our hunting process?
 
-## Timeline Summary and Findings
+## Summary and Findings
 ### Executive Summary:
 - Number of devices that were internet facing: **234**
 - Evidence of brute force attempts from remote IP addresses: **Yes**
