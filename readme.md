@@ -2,13 +2,13 @@
 
 In this scenario I demonstrate the process of threat hunting for devices accidnetly exposed to the internet. We will step through the phases of:
 
-Preparation
-Data Collection
-Data Analysis
-Investigation
-Response
-Documentation
-Improvement
+Preparation<br>
+Data Collection<br>
+Data Analysis<br>
+Investigation<br>
+Response<br>
+Documentation<br>
+Improvement<br>
 
 ## 1. Preparation
 **Goal:** Set up the hunt by defining what we are looking for.  
